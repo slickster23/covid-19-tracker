@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+*{
+    font-family: Poppins;
+}
+
+.infoBox {
+    flex:1 ;
+    cursor: pointer;
+}
+
+.infoBox:not(:last-child) {
+    margin-right: 10px;
+}
+
+.infoBox__cases--green{
+    color:lightgreen !important;
+}
+
+.infoBox__cases {
+    color:rgb(235, 37, 37);
+    font-weight: 600;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.infoBox--selected {
+    border-top:10px solid greenyellow; 
+}
+
+.infoBox--red {
+    border-color:red;
+}
+
+.infoBox__total {
+    color: #6c757d;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+    margin-top: 15px !important;
+}
