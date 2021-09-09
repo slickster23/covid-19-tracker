@@ -16,6 +16,11 @@ const casesTypeColors = {
       hex: "#fb4443",
       multiplier: 200,
     },
+
+    vaccinations: {
+        hex:"#7dd71d",
+        multiplier: 200,
+    }
   };
 
 export const sortData = (data) => {

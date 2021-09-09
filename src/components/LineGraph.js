@@ -73,14 +73,24 @@ function LineGraph({ casesType = 'cases', ...props}) {
           return response.json();
         })
         .then((data) => {
-          let chartData = buildChartData(data, casesType);
+          var chartData = buildChartData(data, casesType);
           setData(chartData);
           console.log(chartData);
           // buildChart(chartData);
         });
     };
 
-    fetchData();
+    
+    fetch ("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1&fullData=true")
+    .then ((response) => {
+      return response.json();
+    })
+    .then ((data => {
+      let chartData = buildChartData(data,casesType);
+      setData(chartData);
+    }))
+
+    fetchData()
   }, [casesType]);
 
   return (

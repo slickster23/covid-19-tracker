@@ -24,6 +24,11 @@
     margin-bottom: 0.5rem;
 }
 
+.infoBox__title {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
 .infoBox--selected {
     border-top:10px solid greenyellow; 
 }

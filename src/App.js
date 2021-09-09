@@ -24,6 +24,8 @@ function App() {
   const [mapCenter, setMapCenter] = useState({lat: 34.80746, lng: -40.4796})//center of the map
   const [mapZoom, setMapZoom] = useState(3); //how far back to zoom
   const [mapCountries, setMapCountries] = useState([]);
+  const [vaccineNum, setVaccineNum] = useState({});
+  
 
   useEffect(() => {
     fetch("https://disease.sh/v3/covid-19/all")
@@ -31,30 +33,70 @@ function App() {
     .then((data) => {
       setCountryInfo(data)
     })
-  }, [])
+
+
+    
+  }, []);
+
+  
+  useEffect(() => {
+    fetch("https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1&fullData=true")
+    .then(response => response.json())
+    .then((data) => {
+      setVaccineNum(data[0].total)
+    })
+
+
+    
+  }, []);
 
   const onCountryChange = async (event) => {
     const countryCode = event.target.value;//grabs selected value from drop down menu
 
-    console.log(countryCode);
 
     setCountry(countryCode);//changes option displayed on Menu
 
     const url = countryCode === 'worldwide' ? 'https://disease.sh/v3/covid-19/all' :
     `https://disease.sh/v3/covid-19/countries/${countryCode}`;
     
-    await fetch (url)
+
+    fetch (url)
     .then (response => response.json())
     .then (data => {
       setCountry(countryCode);
 
+      const url3 = countryCode ==='worldwide' ? 'https://disease.sh/v3/covid-19/vaccine/coverage?lastdays=1&fullData=true' : `https://disease.sh/v3/covid-19/vaccine/coverage/countries/${countryCode}?lastdays=1&fullData=true`
+
+       fetch(url3)
+          .then((response) => response.json())
+          .then ((data) => {
+            if (countryCode === 'worldwide') {
+              setVaccineNum(data[0].total)
+              console.log(countryCode, data[0].total)
+            } else {
+              setVaccineNum(data.timeline[0].total)
+              console.log(countryCode, data.timeline[0].total)
+            }
+              
+
+          })
+
+          
+          
       //All of the data from country response
       setCountryInfo(data);
 
-      setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-      setMapZoom(4)
+      if (countryCode === 'worldwide') {
+        setMapCenter({lat: 34.80746, lng: -40.4796})
+      } else {
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      }
+       
+     setMapZoom(4)
 
     });
+
+   
     //https://disease.sh/v3/covid-19/countries/[COUNTRY_CODE]
     //https://disease.sh/v3/covid-19/all
 
@@ -120,10 +162,10 @@ function App() {
       
      
       <div className="app__stats">
-        <InfoBox isRed  active = {casesType === "cases"} onClick = {(e) => setCasesType("cases")} title = "Coronavirus Cases (Today)" cases = {prettyPrintStat(countryInfo.todayCases) } total = {prettyPrintStat(countryInfo.cases)}></InfoBox>
+        <InfoBox isRed  active = {casesType === "cases"} onClick = {(e) => setCasesType("cases")} title = "Confirmed Cases (Today)" cases = {prettyPrintStat(countryInfo.todayCases) } total = {prettyPrintStat(countryInfo.cases)}></InfoBox>
         <InfoBox active = {casesType === "recovered"} onClick = {(e) => setCasesType("recovered")} title = "Recovered (Today)" cases = {prettyPrintStat(countryInfo.todayRecovered)} total = {prettyPrintStat(countryInfo.recovered)}></InfoBox>
         <InfoBox isRed active = {casesType === "deaths"} onClick = {(e) => setCasesType("deaths")} title = "Deaths (Today)" cases = {prettyPrintStat(countryInfo.todayDeaths)} total = {prettyPrintStat(countryInfo.deaths)}></InfoBox>
-
+        <InfoBox active = {casesType === "vaccinations"} title = "Vaccinations" cases = {prettyPrintStat(vaccineNum)} total = {prettyPrintStat(vaccineNum)}></InfoBox>
       </div>
 
 
@@ -134,7 +176,7 @@ function App() {
     <Card className="app__right">
       <CardContent className = "stats">
          {/*Table*/}
-        <h3>Live Cases by Country</h3>
+        <h3>Total Cases by Country</h3>
         <Table countries = {tableData}></Table>
         <h3 className = "graph__title">Worldwide {casesType} </h3>
          {/*Graph*/}
